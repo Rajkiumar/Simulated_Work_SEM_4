@@ -1,54 +1,73 @@
-const computerChoiceDisplay = document.getElementById('computer-choice')
-const userChoiceDisplay = document.getElementById('user-choice')
-const resultDisplay = document.getElementById('result')
-const possibleChoices = document.querySelectorAll('button')
-let userChoice
-let computerChoice
-let result
+const computerChoiceDisplay = document.getElementById('computer-choice');
+const userChoiceDisplay = document.getElementById('user-choice');
+const resultDisplay = document.getElementById('result');
+const winsDisplay = document.getElementById('wins');
+const lossesDisplay = document.getElementById('losses');
+const drawsDisplay = document.getElementById('draws');
+const winSound = document.getElementById('win-sound');
+const loseSound = document.getElementById('lose-sound');
+const drawSound = document.getElementById('draw-sound');
+const possibleChoices = document.querySelectorAll('button');
 
-possibleChoices.forEach(possibleChoice => possibleChoice.addEventListener('click', (e) => {
-  userChoice = e.target.id
-  userChoiceDisplay.innerHTML = userChoice
-  generateComputerChoice()
-  getResult()
-}))
+let userChoice;
+let computerChoice;
+let result;
+let wins = 0;
+let losses = 0;
+let draws = 0;
+
+possibleChoices.forEach(possibleChoice =>
+  possibleChoice.addEventListener('click', (e) => {
+    userChoice = e.target.id;
+    userChoiceDisplay.innerHTML = capitalize(userChoice);
+    generateComputerChoice();
+    getResult();
+    updateScore();
+    playSound();
+  })
+);
 
 function generateComputerChoice() {
-  const randomNumber = Math.floor(Math.random() * 3) + 1
-  
-  if (randomNumber === 1) {
-    computerChoice = 'rock'
-  }
-  if (randomNumber === 2) {
-    computerChoice = 'scissors'
-  }
-  if (randomNumber === 3) {
-    computerChoice = 'paper'
-  }
-  computerChoiceDisplay.innerHTML = computerChoice
+  const randomNumber = Math.floor(Math.random() * 3);
+  const choices = ['rock', 'paper', 'scissors'];
+  computerChoice = choices[randomNumber];
+  computerChoiceDisplay.innerHTML = capitalize(computerChoice);
 }
 
 function getResult() {
   if (computerChoice === userChoice) {
-    result = 'its a draw!'
+    result = 'It\'s a draw!';
+    draws++;
+  } else if (
+    (computerChoice === 'rock' && userChoice === 'scissors') ||
+    (computerChoice === 'scissors' && userChoice === 'paper') ||
+    (computerChoice === 'paper' && userChoice === 'rock')
+  ) {
+    result = 'You lost!';
+    losses++;
+  } else {
+    result = 'You win!';
+    wins++;
   }
-  if (computerChoice === 'rock' && userChoice === "paper") {
-    result = 'you win!'
+  resultDisplay.innerHTML = result;
+}
+
+function updateScore() {
+  winsDisplay.innerHTML = wins;
+  lossesDisplay.innerHTML = losses;
+  drawsDisplay.innerHTML = draws;
+}
+
+function playSound() {
+  if (result.includes('win')) {
+    winSound.play();
+  } else if (result.includes('lost')) {
+    loseSound.play();
+  } else {
+    drawSound.play();
   }
-  if (computerChoice === 'rock' && userChoice === "scissors") {
-    result = 'you lost!'
-  }
-  if (computerChoice === 'paper' && userChoice === "scissors") {
-    result = 'you win!'
-  }
-  if (computerChoice === 'paper' && userChoice === "rock") {
-    result = 'you lose!'
-  }
-  if (computerChoice === 'scissors' && userChoice === "rock") {
-    result = 'you win!'
-  }
-  if (computerChoice === 'scissors' && userChoice === "paper") {
-    result = 'you lose!'
-  }
-  resultDisplay.innerHTML = result
+}
+
+function capitalize(word) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
 }
